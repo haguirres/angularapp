@@ -1,0 +1,23 @@
+body {
+    color: #757575;
+    font-weight: 100;
+    min-height: 100vh !important;
+    position: relative !important;
+    margin: 0 !important;
+}
+
+textarea {
+    width: 100%;
+    border-radius: 5px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(202,202,202);
+    vertical-align: middle;
+}
+
+
+footer {
+    margin: 40px 0px 0px 0px;
+    padding: 20px 0px 0px 0px;
+    background-color: #E0E6E6;
+}

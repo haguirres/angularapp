@@ -1,0 +1,591 @@
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Folio Generado</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row" style="padding: 10px;">
+      <p>Folio: </p><span style="font-weight: bold">&nbsp;{{folio}}</span>
+    </div>
+    <div class="row" style="padding: 10px;">
+      <p>Password: </p><span style="font-weight: bold">&nbsp;{{password}}</span>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="c('Close click')">Cerrar</button>
+  </div>
+</ng-template>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <p class="title">FEPADETEL</p>
+    </div>
+  </div>
+  <form novalidate (ngSubmit)="save()" [formGroup]="citizenForm">
+    <div class="row">
+      <div class="row col-md-9">
+        <div class="col-md-3">
+          <span>Institución</span>
+          <input type="checkbox" class="checkbox-lg" formControlName="isInstitution" />
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" formControlName="institution" type="text" *ngIf="citizenForm.get('isInstitution').value" />
+        </div>
+      </div>
+      <div class="col-md-3">
+        <span class="text-right">Folio:
+          <label>00000000000</label>
+        </span>
+      </div>
+    </div>
+    <div class="panel-body">
+      <fieldset>
+
+        <div>
+          <div class="row">
+            <span class="col-md-11">
+              <h4>Captura de los datos del ciudadano</h4>
+            </span>
+            <span class="col-md-1 float-right align-bottom">
+              <i class="fa fa-caret-down fa-2x cursorPointer" aria-hidden="true" (click)="expand(0)"></i>
+            </span>
+          </div>
+          <hr class="tab" />
+          <div [hidden]="!expandValues[0]">
+            <div class="form-group">
+              <label class="col-md-4 control-label" for="anonymous">Planteamiento anónimo</label>
+              <input type="checkbox" id="anonymous" formControlName="anonymous" (click)="fillAnonymousFields()" />
+            </div>
+            <div class="row">
+              <div class="form-group col-md-4">
+                <fieldset [disabled]="isAnonymous">
+                  <label class="control-label" for="firstName">Nombre*</label>
+                  <input class="form-control" id="firstName" type="text" formControlName="firstName" />
+                  <span class="help-block" *ngIf="(citizenForm.get('firstName').touched || 
+                                          citizenForm.get('firstName').dirty) && 
+                                          citizenForm.get('firstName').errors">
+                    <span *ngIf="citizenForm.get('firstName').errors.required">
+                      Favor de ingresar nombre
+                    </span>
+                  </span>
+                </fieldset>
+              </div>
+              <div class="form-group col-md-4">
+                <fieldset [disabled]="isAnonymous">
+                  <label class="control-label" for="secondName">Primer Apellido*</label>
+                  <input class="form-control" id="secondName" type="text" formControlName="secondName" />
+                  <span class="help-block" *ngIf="(citizenForm.get('secondName').touched || 
+                                          citizenForm.get('secondName').dirty) && 
+                                          citizenForm.get('secondName').errors">
+                    <span *ngIf="citizenForm.get('secondName').errors.required">
+                      Favor de ingresar primer apellido
+                    </span>
+                  </span>
+                </fieldset>
+              </div>
+              <div class="form-group col-md-4">
+                <fieldset [disabled]="isAnonymous">
+                  <label class="control-label" for="lastName">Segundo Apellido</label>
+                  <input class="form-control" id="lastName" type="text" formControlName="lastName" />
+                </fieldset>
+              </div>
+            </div>
+
+            <div class="form-group" formGroupName="address">
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="col-md-4 control-label" for="country">País*</label>
+                    <select formControlName="country" class="form-control" id="country" (change)="updateStates(country.IdPais)">
+                      <option *ngFor="let country of countries" [value]="country.IdPais">
+                        {{country.Nombre}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('address.country').touched || 
+                                          citizenForm.get('address.country').dirty) && 
+                                          citizenForm.get('address.country').errors">
+                      <span *ngIf="citizenForm.get('address.country').errors.required">
+                        Favor de ingresar país
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="postalCode">Código Postal</label>
+                    <input class="form-control" id="postalCode" type="text" formControlName="postalCode" (change)="getSettlementByPostalCode('address.postalCode')"
+                    />
+                  </fieldset>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="state">Estado*</label>
+                    <select formControlName="state" class="form-control" id="state">
+                      <option *ngFor="let state of states" [value]="state.IdEstado">
+                        {{state.Nombre}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('address.state').touched || 
+                                          citizenForm.get('address.state').dirty) && 
+                                          citizenForm.get('address.state').errors">
+                      <span *ngIf="citizenForm.get('address.state').errors.required">
+                        Favor de ingresar estado
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="town">Municipio o Alcaldía*</label>
+                    <select formControlName="town" class="form-control" id="town">
+                      <option *ngFor="let town of towns" [value]="town.IdMunicipio">
+                        {{town.Nombre}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('address.town').touched || 
+                                          citizenForm.get('address.town').dirty) && 
+                                          citizenForm.get('address.town').errors">
+                      <span *ngIf="citizenForm.get('address.town').errors.required">
+                        Favor de ingresar municipio/alcaldía
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="col-md-4 control-label" for="settlement">Colonia/Población*</label>
+                    <select formControlName="settlement" class="form-control" id="settlement">
+                      <option *ngFor="let settlement of settlements" [value]="settlement.IdAsentamiento">
+                        {{settlement.Nombre}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('address.settlement').touched || 
+                                          citizenForm.get('address.settlement').dirty) && 
+                                          citizenForm.get('address.settlement').errors">
+                      <span *ngIf="citizenForm.get('address.settlement').errors.required">
+                        Favor de ingresar colonia/población
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="street">Calle</label>
+                    <input class="form-control" id="street" type="text" formControlName="street" />
+                  </fieldset>
+                  <span class="help-block" *ngIf="(citizenForm.get('address.street').touched || 
+                                          citizenForm.get('address.street').dirty) && 
+                                          citizenForm.get('address.street').errors">
+                    <span *ngIf="citizenForm.get('address.street').errors.required">
+                      Favor de ingresar calle
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="outdoorNumber">Número Exterior</label>
+                    <input class="form-control" id="outdoorNumber" type="text" formControlName="outdoorNumber" />
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="interiorNumber">Número Interior</label>
+                    <input class="form-control" id="interiorNumber" type="text" formControlName="interiorNumber" />
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" formGroupName="phone">
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="number">Teléfono*</label>
+                    <input class="form-control" id="number" type="text" formControlName="number" />
+                  </fieldset>
+                  <span class="help-block" *ngIf="(citizenForm.get('phone.number').touched || 
+                                          citizenForm.get('phone.number').dirty) && 
+                                          citizenForm.get('phone.number').errors">
+                    <span *ngIf="citizenForm.get('phone.number').errors.required">
+                      Favor de ingresar teléfono
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="otherNumber">Teléfonos adicionales</label>
+                    <input class="form-control" id="otherNumber" type="text" formControlName="otherNumber" />
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="gender">Sexo*</label>
+                    <select formControlName="gender" class="form-control" id="gender">
+                      <option *ngFor="let gender of genders" [value]="gender.IdSexo">
+                        {{gender.Descripcion}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('gender').touched || 
+                                          citizenForm.get('gender').dirty) && 
+                                          citizenForm.get('gender').errors">
+                      <span *ngIf="citizenForm.get('gender').errors.required">
+                        Favor de ingresar sexo
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="age">Edad*</label>
+                    <select formControlName="age" class="form-control" id="age">
+                      <option *ngFor="let age of ages" [value]="age.IdEdad">
+                        {{age.Descripcion}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('age').touched || 
+                                          citizenForm.get('age').dirty) && 
+                                          citizenForm.get('age').errors">
+                      <span *ngIf="citizenForm.get('age').errors.required">
+                        Favor de ingresar edad
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="educationLevel">Escolaridad*</label>
+                    <select formControlName="educationLevel" class="form-control" id="educationLevel">
+                      <option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.IdEscolaridad">
+                        {{educationLevel.Descripcion}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('educationLevel').touched || 
+                                          citizenForm.get('educationLevel').dirty) && 
+                                          citizenForm.get('educationLevel').errors">
+                      <span *ngIf="citizenForm.get('educationLevel').errors.required">
+                        Favor de ingresar escolaridad
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="occupation">Ocupación</label>
+                    <select formControlName="occupation" class="form-control" id="occupation">
+                      <option *ngFor="let occupation of occupations" [value]="occupation.IdOcupacion">
+                        {{occupation.Descripcion}}
+                      </option>
+                    </select>
+                    <span class="help-block" *ngIf="(citizenForm.get('occupation').touched || 
+                                          citizenForm.get('occupation').dirty) && 
+                                          citizenForm.get('occupation').errors">
+                      <span *ngIf="citizenForm.get('occupation').errors.required">
+                        Favor de ingresar ocupación
+                      </span>
+                    </span>
+                  </fieldset>
+                </div>
+                <div class="form-group col-md-4">
+                  <fieldset [disabled]="isAnonymous">
+                    <label class="control-label" for="quality">Usted es: *</label>
+                    <select formControlName="quality" class="form-control" id="quality">
+                      <option *ngFor="let quality of qualities" [value]="quality.IdCalidad">
+                        {{quality.Descripcion}}
+                      </option>
+                    </select>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <span class="col-md-11">
+            <h4>Captura de los datos del probable partícipe</h4>
+          </span>
+          <span class="col-md-1 float-right align-bottom">
+            <i class="fa fa-caret-down fa-2x cursorPointer" aria-hidden="true" (click)="expand(1)"></i>
+          </span>
+        </div>
+        <hr class="tab" />
+        <div [hidden]="!expandValues[1]">
+          <div class="row">
+            <div class="col-md-12">Probables partícipes</div>
+          </div>
+          <div>
+            <div class="row">
+              <p class="col-md-3">Nombre</p>
+              <p class="col-md-3">Tendencia Política</p>
+              <p class="col-md-3">A quién denuncia</p>
+            </div>
+            <div *ngFor="let allegedElement of alleged.value; let i=index">
+              <div class="row">
+                <span class="col-md-3">
+                  <p>{{allegedElement.firstName}} {{allegedElement.secondName}} {{allegedElement.lastName}}</p>
+                </span>
+                <span class="col-md-3">
+                  <p *ngIf="allegedElement.politicalParty">{{politicalParties[allegedElement.politicalParty-1]?.Descripcion}}</p>
+                </span>
+                <span class="col-md-3">
+                  <p *ngIf="allegedElement.who">{{qualities[allegedElement.who-1]?.Descripcion}}</p>
+                </span>
+                <p class="col-md-3" [hidden]="(qualities && politicalParties) && (!allegedElement.who || !allegedElement.politicalParty)">
+                  <i class="fa fa-close text-center cursorPointer" (click)="deleteAlleged(i)"></i>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div formArrayName="alleged" *ngFor="let allegedElement of alleged.controls; let i=index">
+            <div class="form-group" [formGroupName]="i" *ngIf="i === alleged.controls.length -1">
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label class="control-label" attr.for="{{ 'firstNameAlleged' + i}}">Nombre*</label>
+                  <input class="form-control" id="{{ 'firstNameAlleged' + i}}" type="text" formControlName="firstName" />
+                  <span class="help-block" *ngIf="(citizenForm.get('firstName').touched || 
+                                          citizenForm.get('firstName').dirty) && 
+                                          citizenForm.get('firstName').errors">
+                    <span *ngIf="citizenForm.get('firstName').errors.required">
+                      Favor de ingresar el nombre
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" attr.for="{{ 'secondNameAlleged' + i}}">Primer Apellido*</label>
+                  <input class="form-control" id="{{ 'secondNameAlleged' + i}}" type="text" formControlName="secondName" />
+                  <span class="help-block" *ngIf="(citizenForm.get('secondName').touched || 
+                                          citizenForm.get('secondName').dirty) && 
+                                          citizenForm.get('secondName').errors">
+                    <span *ngIf="citizenForm.get('secondName').errors.required">
+                      Favor de ingresar el primer apellido
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" attr.for="{{ 'lastNameAlleged' + i}}">Segundo Apellido*</label>
+                  <input class="form-control" id="{{ 'lastNameAlleged' + i}}" type="text" formControlName="lastName" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label class="control-label" attr.for="{{ 'politicalParty' + i}}">Tendencia Política</label>
+                  <select formControlName="politicalParty" class="form-control" id="{{ 'politicalParty' + i}}">
+                    <option *ngFor="let politicalParty of politicalParties" [value]="politicalParty.IdPartido">
+                      {{politicalParty.Descripcion}}
+                    </option>
+                  </select>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" attr.for="{{ 'who' + i}}">A quién denuncia*</label>
+                  <select formControlName="who" class="form-control" id="{{ 'who' + i}}">
+                    <option *ngFor="let quality of qualities" [value]="quality.IdCalidad">
+                      {{quality.Descripcion}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-4 btn-add">
+            <label class="control-label" for="Add"></label>
+            <button class="btn btn-primary" type="button" id="Add" (click)="addAlleged()">
+              Agregar
+            </button>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <span class="col-md-11">
+            <h4>Lugar de los hechos</h4>
+          </span>
+          <span class="col-md-1 float-right align-bottom">
+            <i class="fa fa-caret-down fa-2x cursorPointer" aria-hidden="true" (click)="expand(2)"></i>
+          </span>
+        </div>
+        <hr class="tab" />
+        <div [hidden]="!expandValues[2]">
+          <div class="form-group" formGroupName="facts">
+            <div class="form-group" formGroupName="placeOfScene">
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="country">País*</label>
+                  <select formControlName="country" class="form-control" id="country">
+                    <option *ngFor="let country of countries" [value]="country.IdPais">
+                      {{country.Nombre}}
+                    </option>
+                  </select>
+                  <span class="help-block" *ngIf="(citizenForm.get('facts.placeOfScene.country').touched || 
+                                          citizenForm.get('facts.placeOfScene.country').dirty) && 
+                                          citizenForm.get('facts.placeOfScene.country').errors">
+                    <span *ngIf="citizenForm.get('facts.placeOfScene.country').errors.required">
+                      Favor de ingresar país
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="postalCode">Código Postal</label>
+                  <input class="form-control" id="postalCode" type="text" formControlName="postalCode" (change)="getSettlementByPostalCode('facts.placeOfScene.postalCode')"
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="state">Estado*</label>
+                  <select formControlName="state" class="form-control" id="state">
+                    <option *ngFor="let state of states" [value]="state.IdEstado">
+                      {{state.Nombre}}
+                    </option>
+                  </select>
+                  <span class="help-block" *ngIf="(citizenForm.get('facts.placeOfScene.state').touched || 
+                                          citizenForm.get('facts.placeOfScene.state').dirty) && 
+                                          citizenForm.get('facts.placeOfScene.state').errors">
+                    <span *ngIf="citizenForm.get('facts.placeOfScene.state').errors.required">
+                      Favor de ingresar estado
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="town">Municipio o Alcaldía*</label>
+                  <select formControlName="town" class="form-control" id="town">
+                    <option *ngFor="let town of towns" [value]="town.IdMunicipio">
+                      {{town.Nombre}}
+                    </option>
+                  </select>
+                  <span class="help-block" *ngIf="(citizenForm.get('facts.placeOfScene.town').touched || 
+                                          citizenForm.get('facts.placeOfScene.town').dirty) && 
+                                          citizenForm.get('facts.placeOfScene.town').errors">
+                    <span *ngIf="citizenForm.get('facts.placeOfScene.town').errors.required">
+                      Favor de ingresar municipio/alcaldía
+                    </span>
+                  </span>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="settlement">Colonia/Población*</label>
+                  <select formControlName="settlement" class="form-control" id="settlement">
+                    <option *ngFor="let settlement of settlementsFacts" [value]="settlement.IdAsentamiento">
+                      {{settlement.Nombre}}
+                    </option>
+                  </select>
+                  <span class="help-block" *ngIf="(citizenForm.get('facts.placeOfScene.settlement').touched || 
+                                          citizenForm.get('facts.placeOfScene.settlement').dirty) && 
+                                          citizenForm.get('facts.placeOfScene.settlement').errors">
+                    <span *ngIf="citizenForm.get('facts.placeOfScene.settlement').errors.required">
+                      Favor de ingresar colonia/población
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="street">Calle</label>
+                  <input class="form-control" id="street" type="text" formControlName="street" />
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="outdoorNumber">Número Exterior</label>
+                  <input class="form-control" id="outdoorNumber" type="text" formControlName="outdoorNumber" />
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="control-label" for="interiorNumber">Número Interior</label>
+                  <input class="form-control" id="interiorNumber" type="text" formControlName="interiorNumber" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-md-8">
+                  <label class="control-label" for="reference">Referencias del lugar</label>
+                  <input class="form-control" id="reference" type="text" formControlName="reference" />
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-md-2">
+                <label class="control-label" for="knowsDate">¿Conoce la fecha?</label>
+                <input class="form-control" type="checkbox" id="knowsDate" formControlName="knowsDate" />
+              </div>
+              <div class="form-group col-md-4" *ngIf="this.citizenForm.get('facts.knowsDate').value">
+                <label class="control-label" for="date">Fecha de los Hechos*</label>
+                <div class="input-group">
+                  <input class="form-control" placeholder="dd/mm/yyyy" name="dp" formControlName="date" ngbDatepicker #d="ngbDatepicker" />
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+                      <i class="fa fa-calendar" style="width: 1.2rem; height: 1rem; cursor: pointer;" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+                <span class="help-block" *ngIf="(citizenForm.get('facts.date').touched || 
+                                          citizenForm.get('facts.date').dirty) && 
+                                          citizenForm.get('facts.date').errors">
+                  <span *ngIf="citizenForm.get('facts.date').errors.required">
+                    Favor de ingresar fecha de los hechos
+                  </span>
+                </span>
+              </div>
+              <div class="form-group col-md-4" *ngIf="this.citizenForm.get('facts.knowsDate').value">
+                <label class="control-label" for="hour">Hora de los Hechos</label>
+                <!-- <input class="form-control" id="hour" type="text" formControlName="hour" /> -->
+                <ngb-timepicker formControlName="hour"></ngb-timepicker>
+              </div>
+              <div class="form-group col-md-4" *ngIf="!this.citizenForm.get('facts.knowsDate').value">
+                <label class="control-label" for="estimatedTime">Fecha/Hora aproximada</label>
+                <input class="form-control" id="estimatedTime" type="text" formControlName="estimatedTime" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-md-12">
+                <label class="control-label" for="report">Narración de los Hechos*</label>
+                <textarea class="form-control" rows="5" id="report" type="text" formControlName="report"></textarea>
+              </div>
+              <span class="help-block" *ngIf="(citizenForm.get('facts.report').touched || 
+              citizenForm.get('facts.report').dirty) && 
+              citizenForm.get('facts.report').errors">
+                <span *ngIf="citizenForm.get('facts.report').errors.required">
+                  Favor de ingresar narracion de los hechos
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="form-group">
+          <div class="col-md-4 col-md-offset-2">
+            <span>
+              <button class="btn btn-primary" type="submit" [disabled]="!citizenForm.valid">
+                Guardar
+              </button>
+            </span>
+          </div>
+        </div> -->
+      </fieldset>
+      <app-classification [classificationGroup]="citizenForm.controls.classification" [expanded]="expandValues[3]" (expandClassification)="expand($event)"></app-classification>
+      <div class="row">
+        <div class="col-md-12">
+          <ngb-alert [type]="'danger'" *ngIf="!citizenForm.valid && submitted">
+            <strong>¡Error de registro!</strong> No ha llenado varios campos requeridos. Por favor verifique.
+          </ngb-alert>
+          <button class="btn btn-primary" type="submit"  >Guardar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Valid: {{citizenForm.valid}} Value: {{citizenForm.value | json}} -->

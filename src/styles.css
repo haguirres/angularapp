@@ -1,0 +1,64 @@
+body {
+    min-height: 100vh;
+    font-weight: 100 !important;
+  }
+  
+  .btn-primary, .btn-primary:disabled, .btn-primary:hover:disabled {
+    padding: 10px 60px 10px 60px;
+    vertical-align: middle;
+    background-color: #e0e6e6;
+    color: #6F2C3F;
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(202, 202, 202);
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background-color: #6F2C3F;
+    color: #fff;
+    border: 0;
+  }
+  input[type='checkbox'] {
+    width: 50px;
+    height: 34px;
+    vertical-align: middle;
+  }
+  
+  hr.tab {
+    margin: 10px 0 20px;
+    border-top-color: #6F2C3F;
+  }
+  
+  hr.tab:before {
+    width: 300px;
+    height: 2px;
+    background-color: #6F2C3F;
+    position: absolute;
+    content: ' ';
+  }
+  .tab {
+    color:#6F2C3F;
+  }
+  
+  .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+    padding: 10px 60px 10px 60px;
+    vertical-align: middle;
+    background-color: #6F2C3F;
+    color: #ffffff;
+    cursor: pointer;
+    border:0;
+  }
+  
+  .btn-primary:focus, .btn-primary.focus {
+    box-shadow: unset;
+    border: 0;
+  }
+  
+  .btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .show > .btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.5)
+  }
+  
+  .cursorPointer{
+    cursor: pointer;
+  }

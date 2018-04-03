@@ -1,0 +1,119 @@
+<div class="row">
+  <span class="col-md-11">
+    <h4>Clasificación del planteamiento ciudadano</h4>
+  </span>
+  <span class="col-md-1 float-right align-bottom">
+    <i class="fa fa-caret-down fa-2x cursorPointer" aria-hidden="true" (click)="expand()"></i>
+  </span>
+</div>
+<hr class="tab" />
+
+<div class="form-group" [formGroup]="classificationGroup" [hidden]="!expanded">
+  <div class="row">
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.Incident}"
+        (click)="setIncidentType(classificationTypes.Incident)">Incidente Electoral</button>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.AdministrativeFault}"
+        (click)="setIncidentType(classificationTypes.AdministrativeFault)"> Falta administrativa</button>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.ElectoralElection}"
+        (click)="setIncidentType(classificationTypes.ElectoralElection)">Asuntos institucionales</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.PoliticalViolence}"
+        (click)="setIncidentType(classificationTypes.PoliticalViolence)">Violencia Política</button>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.Complaint}"
+        (click)="setIncidentType(classificationTypes.Complaint)">Inconformidad del servicio</button>
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.ElectoralRegistration}"
+        (click)="setIncidentType(classificationTypes.ElectoralRegistration)">Registro Federal de Electores</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <button type="button" class="btn btn-primary width100percent btn-padding" [ngClass]="{'active':classificationGroup.get('type').value==classificationTypes.NotApplicableFolio}"
+        (click)="setIncidentType(classificationTypes.NotApplicableFolio)">Folio improcedente</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label class="control-label" for="incident">Incidente*</label>
+      <select class="form-control" *ngIf="!classificationGroup.get('type').value"></select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.Incident">
+        <option *ngFor="let incident of incidents" [value]="incident.IdIncidente">
+          {{incident.Descripcion}}
+        </option>
+      </select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.AdministrativeFault">
+        <option *ngFor="let administrativeFault of administrativeFaults" [value]="administrativeFault.IdFaltaAdministrativa">
+          {{administrativeFault.Descripcion}}
+        </option>
+      </select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.ElectoralElection">
+        <option *ngFor="let electoralElection of electoralElections" [value]="electoralElection.IdInfoElectoral">
+          {{electoralElection.Descripcion}}
+        </option>
+      </select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.PoliticalViolence">
+        <option *ngFor="let violence of politicalViolence" [value]="violence.IdViolenciaPolitica">
+          {{violence.Descripcion}}
+        </option>
+      </select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.Complaint">
+        <option *ngFor="let complaint of complaints" [value]="complaint.IdQuejaVsFepade">
+          {{complaint.Descripcion}}
+        </option>
+      </select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.ElectoralRegistration">
+        <option *ngFor="let electoralRegistration of electoralRegistrations" [value]="electoralRegistration.IdRegFedElectores">
+          {{electoralRegistration.Descripcion}}
+        </option>
+      </select>
+      <select class="form-control" id="incident" formControlName="incident" *ngIf="classificationGroup.get('type').value===classificationTypes.NotApplicableFolio">
+        <option *ngFor="let notApplicableFolio of notApplicableFolios" [value]="notApplicableFolio.IdLlamadaImprocedente">
+          {{notApplicableFolio.Descripcion}}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label class="control-label" for="answer">Respuesta ofrecida*</label>
+      <select class="form-control" id="answer" formControlName="answer">
+        <option *ngFor="let answer of answers" [value]="answer.IdRespuestaOfrecida">
+          {{answer.Descripcion}}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label class="control-label" for="dependency">Área a turnar*</label>
+      <select class="form-control" id="dependency" formControlName="dependency">
+        <option *ngFor="let dependency of dependencies" [value]="dependency.IdDependencia">
+          {{dependency.Descripcion}}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-12" *ngIf="classificationGroup.get('dependency').value==='4'">
+      <label class="control-label" for="citizenMessage">Mensaje al ciudadano*</label>
+      <textarea class="form-control" rows="5" id="citizenMessage" type="text" formControlName="citizenMessage"></textarea>
+    </div>
+  </div>
+</div>
